@@ -1,0 +1,31 @@
+* q2.cwb
+
+input "ctl.cwb";
+
+agent GoodPedestrian = 'req.AwaitingSignal + noping.GoodPedestrian;
+agent AwaitingSignal = green.InCrossing + noping.AwaitingSignal;
+agent InCrossing = noping.Safe + ping.InCrossing + red.Litigant;
+agent Safe = noping.Safe + red.0;
+agent Litigant = 'sue.0;
+
+* I was not sure if it was necessary to model the "noping" actions
+* that are possible in GoodPedestrian, AwaitingSignal and Safe,
+* since as the pedestrian is well behaved there is really no need
+* for them, but I decided to do so anyway in case they are considered
+* part of the "reponds to ... sonar pings" requirement.
+agent Controller = req.ReadyToSendSignal + 'noping.Controller;
+agent ReadyToSendSignal = 'green.Waiting + 'noping.ReadyToSendSignal;
+agent Waiting = 'ping.Waiting + 'noping.PedestrianSafe;
+agent PedestrianSafe = 'noping.PedestrianSafe + 'red.Controller;
+
+agent System = (GoodPedestrian | Controller)\{req, noping, green, red, ping};
+
+*** Property Checks ***
+
+echo "The pedestrian can never sue:";
+prop NeverSue = AG(['sue]F);
+checkprop(System, NeverSue);
+echo "";
+
+echo "The system is weakly bisimilar to the 0 system.";
+eq(System, 0);

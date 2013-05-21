@@ -1,0 +1,84 @@
+* q3.cwb
+
+* The five controllers. Apologies for the slight lack of readability.
+agent Controller1 = flash1.'sigUp1.sigDown2.Controller1;
+
+agent Controller2 = sigUp1.'sigUp2.sigDown3.flash2.'sigUp2.sigDown3.'sigDown2.Controller2;
+
+agent Controller3 = sigUp2.'sigUp3.sigDown4.'sigDown3.sigUp2.'sigUp3.sigDown4.flash3.'sigDown3.Controller3;
+
+agent Controller4 = sigUp3.'sigUp4.sigDown5.'sigDown4.sigUp3.flash4.'sigDown4.Controller4;
+
+agent Controller5 = sigUp4.flash5.'sigDown5.Controller5;
+
+* The system as a whole.
+set Signals = {sigUp1, sigDown1, sigUp2, sigDown2, sigUp3, sigDown3, sigUp4, sigDown4, sigUp5, sigDown5};
+agent Christmas = (Controller1 | Controller2 | Controller3 | Controller4 | Controller5)\Signals;
+
+* The specification
+agent Spec = flash1.flash5.flash2.flash4.flash3.Spec;
+
+*** Property Checks ***
+* Unfortunately it appears that cwb is a very sparse language, and this impacts on
+* the readability of the property checks. For example, I could find no way to assign
+* the output of "sort" to a set, nor to do any actions on a set (e.g. check for
+* disjoint-ness.)
+
+* Property 0 - Christmas can only execute flash1, ... flashn
+echo "Property 0: should print out {flash1, ..., flash5}.";
+sort Christmas;
+echo "";
+
+* Property 1 - Controlleri can execute fi, and none of fj for j != i
+echo "Property 1: the set for each Controller i should not include flashj for j != i";
+echo "Controller 1:";
+sort Controller1;
+echo "Controller 2:";
+sort Controller2;
+echo "Controller 3:";
+sort Controller3;
+echo "Controller 4:";
+sort Controller4;
+echo "Controller 5:";
+sort Controller5;
+echo "";
+
+* Property 2 - Controller1 can only communicate with Controller2
+echo "Property 2: the set for each Controller i (i > 2) should be disjoint with Controller 1's";
+echo "Controller 1:";
+sort Controller1;
+echo "Controller 3:";
+sort Controller3;
+echo "Controller 4:";
+sort Controller4;
+echo "Controller 5:";
+sort Controller5;
+echo "";
+
+
+* Property 3 - For 2 <= i <= 4, Controller i can only communicate with Controller i-1 and Controller i+1.
+echo "Property 3: the set for each Controller i (2 <= i <= 4) should only ";
+echo "            contain sigUpk and sigDownk for i-1 <= k <= i+1 (and flashi.)";
+echo "Controller 2:";
+sort Controller2;
+echo "Controller 3:";
+sort Controller3;
+echo "Controller 4:";
+sort Controller4;
+echo "";
+
+* Property 4 - Controller5 can only communicate with Controller4
+echo "Property 4: the set for each Controller i (i < 4) should be disjoint with Controller 5's";
+echo "Controller 5:";
+sort Controller5;
+echo "Controller 1:";
+sort Controller1;
+echo "Controller 2:";
+sort Controller2;
+echo "Controller 3:";
+sort Controller3;
+echo "";
+
+* Property 5 - weak bisimilarity with Spec.
+echo "Property 5 - weak bisimilarity.";
+eq(Christmas, Spec);
