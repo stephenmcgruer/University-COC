@@ -1,0 +1,61 @@
+* cwb properties and agents for verifying my q3 answers.
+
+input "ctl.cwb";
+
+prop Prop1 = AF(<b>T & [-][b]F);
+prop Prop2 = AF([b]F & <c>T);
+prop Prop3 = AG([b]F | <c>T);
+prop Prop4 = AG(<a>T);
+prop Prop5 = AG([b]F | [-][c]F);
+
+* Satisfies Prop1
+agent E1 = b.0;
+
+* Satisfies Prop1 and Prop2
+agent E2 = c.F2;
+agent F2 = b.0;
+
+* Satisfies Prop1, Prop2, and Prop3
+agent E3 = c.F3;
+agent F3 = c.0 + b.0;
+
+* Satisfies Prop1, Prop2, Prop3, and Prop4 
+agent E4 = a.F4 + c.F4;
+agent F4 = a.E4 + b.E4 + c.E4;
+
+* Satisfies Prop1, Prop2, Prop3, Prop4, and Prop5
+agent E5 = a.F5 + c.F5;
+agent F5 = a.G5 + b.G5 + c.G5;
+agent G5 = a.G5;
+
+echo "COC Coursework 1, question 3";
+echo "";
+
+echo "Process E1 property check";
+checkprop(E1, Prop1);
+echo "";
+
+echo "Process E2 property checks";
+checkprop(E2, Prop1);
+checkprop(E2, Prop2);
+echo "";
+
+echo "Process E3 property checks";
+checkprop(E3, Prop1);
+checkprop(E3, Prop2);
+checkprop(E3, Prop3);
+echo "";
+
+echo "Process E4 property checks";
+checkprop(E4, Prop1);
+checkprop(E4, Prop2);
+checkprop(E4, Prop3);
+checkprop(E4, Prop4);
+echo "";
+
+echo "Process E5 property checks";
+checkprop(E5, Prop1);
+checkprop(E5, Prop2);
+checkprop(E5, Prop3);
+checkprop(E5, Prop4);
+checkprop(E5, Prop5);

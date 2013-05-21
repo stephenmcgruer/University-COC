@@ -1,0 +1,42 @@
+input "ctl.cwb";
+
+* The properties
+prop NeverDeadlock = AG(<->T);
+prop Safety = AG(['ccross]F | ['tcross]F);
+prop NeverCarPossible = EG([tau]['ccross]F);
+prop NeverTrainPossible = EG([tau]['tcross]F);
+prop Goal = AG([train]AF(<'tcross>T));
+
+* My solution works by using a "lock" which gives priority to trains.
+* If a train arrives, and a car is not currently crossing (i.e. 
+* the third state is just Signal), then no more cars can cross
+* until the train does (however another car can arrive.)
+agent Road = car.lock.up.'ccross.'down.Road + lock.Road;
+agent Rail = train.green.'tcross.'red.Rail + 'lock.Rail;
+agent Signal = 'green.red.Signal + 'up.down.Signal;
+
+set K = {green, red, up, down, lock};
+agent Crossing = (Road | Rail | Signal)\K;
+
+
+echo "COC Coursework 1, question 4";
+echo "";
+
+echo "Property 1: No Deadlocks";
+checkprop(Crossing, NeverDeadlock);
+echo "";
+
+echo "Property 2: Safety";
+checkprop(Crossing, Safety);
+echo "";
+
+echo "Property 3: Possibility for No Car.";
+checkprop(Crossing, NeverCarPossible);
+echo "";
+
+echo "Property 4: Possibility for No Train.";
+checkprop(Crossing, NeverTrainPossible);
+echo "";
+
+echo "Property 5: Train must eventually cross.";
+checkprop(Crossing, Goal);
